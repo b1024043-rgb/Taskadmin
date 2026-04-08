@@ -46,12 +46,31 @@ h2{
     margin-top: 20px;
 }
 
-.task-plus{
-    margin: 20px;
-    padding: 0px;
+button{
+    /* --- 既存のコード --- */
+    border: 1px solid #333; 
+    background-color: #fff;
     width: 50px;
     height: 50px;
-    border-radius: 25px;
+    border-radius: 50%;
+    margin: 20px;
+    font-size: 30px;
+    color: #333;
+    transition: all 0.1s;
 }
+
+button:hover{
+    background-color: #d0d0d0;
+    cursor: pointer;
+}
+
+button:active{
+     background-color: #b0b0b0;
+     transform: scale(0.95);
+}
+
+/* button:focus{
+    outline: 2px solid #007bff;
+} */
 
 

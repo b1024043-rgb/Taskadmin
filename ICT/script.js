@@ -1,62 +1,56 @@
 //DOMが読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function(){
-    //console.logでデバッグメッセージを出力
-    console.log('ページが読み込まれました！');
+    // 必要な情報をすべて取得する
+    const boardScene = document.getElementById('board-scene');
+    const formScene = document.getElementById('form-scene');
 
-    //HTML要素を取得
-    const greetBtn = document.getElementById('greetBtn');
-    const changeColorBtn = document.getElementById('changeColorBtn');
-    const resultElement = document.getElementById('result');
-    const messageElement = document.getElementById('message');
+    const showFormBtn = document.getElementById('show-form-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
 
-    //要素が取得できたかコンソールで確認
-    console.log('挨拶ボタン',greetBtn);
-    console.log('色変更ボタン',changeColorBtn);
-    console.log('結果表示領域',resultElement);
+    const taskInput = document.getElementById('task-input');
+    const taskManager = document.getElementById('task-manager');
+    const todoList = document.querySelector('.todo .task-list');
 
-    //挨拶ボタンのクリックイベント
-    greetBtn.addEventListener('click',function(){
-        console.log('挨拶ボタンがクリックされました。');
-        
-        //現在の時間を取得
-        const currentHour =new Date().getHours();
-        let greeting;
-
-        //時間帯に応じて挨拶を変える
-        if (currentHour <12){
-            greeting = 'おはようございます！';
-        }else if(currentHour < 18){
-            greeting = 'こんにちは！';
-        }else {
-            greeting = 'こんばんは！';
-        }
-        //デバッグ情報をコンソールに出力
-        console.log('現在の時間:',currentHour, '時');
-        console.log('選択された挨拶', greeting);
-
-        //結果を表示
-        resultElement.innerHTML = '時間: ' + currentHour + '時<br>' + '<span class="highlight">' + greeting + '</span';
+//画面切り替え処理
+    //「＋」ボタンを押したとき
+    showFormBtn.addEventListener('click', () => {
+        boardScene.style.display = 'none';
+        formScene.style.display = 'block';
     });
 
-    //色変更ボタンのクリックイベント
-    changeColorBtn.addEventListener('click', function(){
-        console.log('色変更ボタンがクリックされました。');
+    //「戻る」ボタンを押したとき
+    cancelBtn.addEventListener('click',() => {
+        formScene.style.display = 'none';
+        boardScene.style.display = 'block';
+    });
 
-        //ランダムな色を生成
-        const colors = ['#FF6B6B', '#4ECDC4','#45B7D1', '#FFBE0B', '#7B68EE'];
-        const randomIndex = Math.floor(Math.random() * colors.length);
-        const selectedColor = colors[randomIndex];
+    //タスク保存の処理
+    saveBtn.addEventListener('click', () =>{
+        const taskText = taskInput.value;
+        const managerText = taskManager.value;
 
-        //デバッグ情報をコンソールに出力
-        console.log('利用可能な色:',colors);
-        console.log('選択されたインデックス:', randomIndex);
-        console.log('選択された色:', selectedColor);
+        if(taskText === "" || managerText === ""){
+            alert("内容と担当者をどちらも入力してください！");
+            return;
+        }
 
-        //メッセージの色を変更
-        messageElement.style.color = selectedColor;
+        const newTaskCard = document.createElement('div');
+        newTaskCard.classList.add('task-card','status-todo');
 
-        //結果を表示
-        resultElement.innerHTML = '色を変更しました:<br>' + '選択された色 <span style= "color:' + selectedColor + '">' + selectedColor + '</span>';
+        newTaskCard.innerHTML =`
+            <strong>${taskText}</strong>
+            <p style="margin: 5px 0 0 0; font-size: 0.8em; color #666;">
+                担当：${managerText}
+            </p>
+        `;
+
+        todoList.appendChild(newTaskCard);
+
+        taskInput.value = "";
+        taskManager.value = "";
+        formScene.style.display = 'none';
+        boardScene.style.display = 'block'
     });
 
 });

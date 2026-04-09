@@ -53,16 +53,15 @@ body {
     color: red;
     
 }
+fieldset{
+    border-radius: 10px;
+}
 
-.input{
+.form-group{
     margin: 10px;
     text-align: left;
 }
 
-.manager{
-    margin: 10px;
-    text-align: left;
-}
 
 /*見出しのスタイル*/
 

@@ -53,8 +53,11 @@ body {
     color: red;
     
 }
+fieldset{
+    border-radius: 10px;
+}
 
-.input, .manager, .date{
+.form-group{
     margin: 10px;
     text-align: left;
 }

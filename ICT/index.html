@@ -21,8 +21,6 @@
           <h2>未着手</h2>
           <div class="task-list">
             <div class="task-card status-todo">タスク１</div>
-            <div class="task-card status-todo">タスク２</div>
-            <div class="task-card status-todo">タスク３</div>
           </div>
         </section>
         <!-- 真ん中 -->
@@ -30,8 +28,6 @@
           <h2>着手中</h2>
           <div class="task-list">
             <div class="task-card status-doing">タスク１</div>
-            <div class="task-card status-doing">タスク２</div>
-            <div class="task-card status-doing">タスク３</div>
           </div>
         </section>
         <!-- 右 -->
@@ -39,8 +35,6 @@
           <h2>完了済み</h2>
           <div class="task-list">
             <div class="task-card status-done">タスク１</div>
-            <div class="task-card status-done">タスク２</div>
-            <div class="task-card status-done">タスク３</div>
           </div>
         </section>
       </div>
@@ -56,7 +50,7 @@
         <fieldset>
           <legend>タスク詳細</legend>
           <!-- 内容を書き込む -->
-          <section class="input">
+          <section class="form-group">
             <label for="task-input">タスク名：</label>
             <input
               type="text"
@@ -66,12 +60,12 @@
             />
           </section>
           <!-- 期日を書き込む -->
-          <section class="date">
+          <section class="form-group">
             <label for="task-date">期日　　：</label>
             <input type="date" id="task-date" />
           </section>
           <!-- 担当者を書き込む -->
-          <section class="manager">
+          <section class="form-group">
             <label for="task-manager">担当者　：</label>
             <input
               type="text"

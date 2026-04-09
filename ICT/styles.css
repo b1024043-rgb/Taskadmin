@@ -14,21 +14,33 @@ body {
     align-items: flex-start;
     justify-content: center;
 }
-
+/* タスク全体ののスタイル */
 .column{
     width: 300px;
     background: #ccc;
     border-radius: 8px;
     padding-bottom: 20px;
 }
-
+/* 未着手タスクのスタイル */
+.todo{
+    background-color:lightblue;
+}
+/* 着手中タスクのスタイル */
+.doing{
+    background-color:darkorange;
+}
+/* 完了済みタスクのスタイル */
+.done{
+    background-color:lightgreen;
+}
+/* それぞれの列のタスクのスタイル */
 .task-list{
     display: flex;
     flex-direction: column;
     gap: 40px;
     padding: 10px;
 }
-
+/* タスク一つ一つのスタイル*/
 .task-card{
     background: white;
     padding: 15px;
@@ -36,7 +48,21 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     text-align: left;
 }
+/* タスク管理アプリ見出しのスタイル */
+.head{
+    color: red;
+    
+}
 
+.input{
+    margin: 10px;
+    text-align: left;
+}
+
+.manager{
+    margin: 10px;
+    text-align: left;
+}
 
 /*見出しのスタイル*/
 
@@ -46,6 +72,7 @@ h2{
     margin-top: 20px;
 }
 
+/* ボタン全体のスタイル */
 button{
     /* --- 既存のコード --- */
     border: 1px solid #333; 
@@ -58,16 +85,29 @@ button{
     color: #333;
     transition: all 0.1s;
 }
-
+/* ボタンにカーソルを合わせたときのスタイル */
 button:hover{
     background-color: #d0d0d0;
     cursor: pointer;
 }
-
+/* ボタンをクリックしたときのスタイル */
 button:active{
      background-color: #b0b0b0;
      transform: scale(0.95);
 }
+
+.save-btn, .cancel-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+    border-radius: 0%;
+    writing-mode: vertical-lr;
+    display: flex;        /* 中身を中央に寄せる準備 */
+    justify-content: center;
+    align-items: center;
+}
+
+
 
 /* button:focus{
     outline: 2px solid #007bff;

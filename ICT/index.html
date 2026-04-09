@@ -9,12 +9,14 @@
 <body>
     <div id="board-scene">
         <!-- 一番大きい見出し -->
-        <div class="head">
+        <header class="head">
             <h1>タスク管理アプリ</h1>
-    </div>
+        </header>
+    <!-- カンバンのシーン -->
     <div class="kanban-board">
         <!-- タスクの分類 -->
-        <section class="column">
+         <!-- 左 -->
+        <section class="column todo">
             <h2>未着手</h2>
             <div class="task-list">
                 <div class="task-card status-todo">タスク１</div>
@@ -22,7 +24,8 @@
                 <div class="task-card status-todo">タスク３</div>
             </div>
         </section>
-        <section class="column">
+        <!-- 真ん中 -->
+        <section class="column doing">
             <h2>着手中</h2>
             <div class="task-list">
                 <div class="task-card status-doing">タスク１</div>
@@ -30,7 +33,8 @@
                 <div class="task-card status-doing">タスク３</div>
             </div>
         </section>
-        <section class="column">
+        <!-- 右 -->
+        <section class="column done">
             <h2>完了済み</h2>
             <div class="task-list">
                 <div class="task-card status-done">タスク１</div>
@@ -42,13 +46,22 @@
     <!-- 追加ボタン -->
     <button id="show-form-btn" class="add-button">+</button>
     </div>
-
-    <div id="form-scene" style="display: none;">
+    <!-- タスクを追加できるシーン -->
+    <div id="form-scene" >
         <h2>タスクを追加</h2>
-        <label for="task-input">内容：</label>
-        <input type="text" id="task-input" required placeholder="何をしますか？">
-        <button id="save-btn">保存</button>
-        <button id="cancel-btn">戻る</button>
+        <!-- 内容を書き込む -->
+        <section class="input">
+            <label for="task-input" >内容　：</label>
+            <input type="text" id="task-input" required placeholder="何をしますか？">
+        </section>
+        <!-- 担当者を書き込む -->
+        <section class="manager">
+            <label for="task-manager">担当者：</label>
+            <input type="text" id="task-manager" required placeholder="山田　太郎">
+        </section>
+        <!-- 保存と戻るボタン -->
+        <button id="save-btn" class="save-btn">保存</button>
+        <button id="cancel-btn" class="cancel-btn">戻る</button>
     </div>
 <script src="script.js"></script>
 </body>

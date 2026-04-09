@@ -54,15 +54,11 @@ body {
     
 }
 
-.input{
+.input, .manager, .date{
     margin: 10px;
     text-align: left;
 }
 
-.manager{
-    margin: 10px;
-    text-align: left;
-}
 
 /*見出しのスタイル*/
 

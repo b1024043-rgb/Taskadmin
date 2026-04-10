@@ -106,6 +106,16 @@ button:active{
     align-items: center;
 }
 
+.edit-btn, .delete-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+    border-radius: 50%;
+    writing-mode: vertical-lr;
+    display: flex;        /* 中身を中央に寄せる準備 */
+    justify-content: center;
+    align-items: center;
+}
 
 
 /* button:focus{

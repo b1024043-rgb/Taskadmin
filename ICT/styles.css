@@ -20,6 +20,8 @@ body {
     background: #ccc;
     border-radius: 8px;
     padding-bottom: 20px;
+    flex: 1; /* レスポンシブ用追加 */
+    min-width: 250px; /* レスポンシブ用追加 */
 }
 /* 未着手タスクのスタイル */
 .todo{
@@ -39,7 +41,17 @@ body {
     flex-direction: column;
     gap: 40px;
     padding: 10px;
+    min-height: 300px; /* 空でもドロップ可能にする */
+    border: 2px solid transparent; /* 枠線を確保しておく */
+    transition: all 0.2s;
 }
+
+/* ★追加：ドラッグ中の要素が重なった時の点線表示 */
+.task-list.drag-over {
+    border: 2px dashed #666;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
 /* タスク一つ一つのスタイル*/
 .task-card {
     background: white;
@@ -49,6 +61,7 @@ body {
     display: flex;
     flex-direction: column; /* 縦に積む */
     gap: 5px;               /* 要素間の隙間を一定にする */
+    cursor: grab;
 }
 /* タスク管理アプリ見出しのスタイル */
 .head{
@@ -117,7 +130,7 @@ button:active{
     justify-content: space-between; /* 両端にボタン、中央にコンテンツ */
     min-height: 100vh;
     width: 100%;
-    overflow: hidden; /* はみ出し防止 */
+    overflow-y: auto; /* 縦並び時スクロール用 */
 }
 
 .scene-wrapper {
@@ -177,3 +190,15 @@ button:active{
 .middle { background-color: #ffcc00; } /* 黄色 */
 .low    { background-color: #4db8ff; } /* 青 */
 
+/* レスポンシブ（スマホ等）用設定 */
+@media screen and (max-width: 850px) {
+    .kanban-board {
+        flex-direction: column;
+        align-items: center;
+    }
+    .column {
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 20px;
+    }
+}

@@ -1,16 +1,31 @@
 document.addEventListener('DOMContentLoaded', function(){
+    // Firebaseの関数をwindowから取得
+    const { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } = window.fb;
+    const db = window.db;
+    const tasksCollection = collection(db, "tasks");
+
     // 要素の取得
     const boardScene = document.getElementById('board-scene');
     const formScene = document.getElementById('form-scene');
-
     const showFormBtn = document.getElementById('show-form-btn');
     const saveBtn = document.getElementById('save-btn');
     const cancelBtn = document.getElementById('cancel-btn');
-
     const taskInput = document.getElementById('task-input');
-    const taskDate = document.getElementById('task-date'); // 期日入力欄を追加
+    const taskDate = document.getElementById('task-date');
     const taskManager = document.getElementById('task-manager');
-    const todoList = document.querySelector('.todo .task-list');
+    const taskPriority = document.getElementById('task-priority');
+
+    // --- リアルタイム反映 (onSnapshot) ---
+    onSnapshot(query(tasksCollection, orderBy("createdAt", "desc")), (snapshot) => {
+        document.getElementById('todo-list').innerHTML = "";
+        document.getElementById('doing-list').innerHTML = "";
+        document.getElementById('done-list').innerHTML = "";
+
+        snapshot.forEach((docSnap) => {
+            const task = docSnap.data();
+            renderTaskCard(task, docSnap.id);
+        });
+    });
 
     // 画面切り替え：追加ボタン
     showFormBtn.addEventListener('click', () => {
@@ -20,51 +35,34 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // 画面切り替え：戻るボタン
     cancelBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // フォーム送信（リロード）を防ぐ
+        e.preventDefault();
         formScene.style.display = 'none';
         boardScene.style.display = 'block';
     });
 
-    // タスク保存の処理
-    saveBtn.addEventListener('click', (e) => {
-        e.preventDefault(); // フォームのデフォルトの動きを止める
+    // タスク保存の処理 (Firebaseへ追加)
+    saveBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
 
         const taskText = taskInput.value;
         const managerText = taskManager.value;
-        const dateText = taskDate.value; // 期日の値を取得
+        const dateText = taskDate.value;
+        const priorityText = taskPriority ? taskPriority.value : "middle";
 
-        // バリデーション（入力チェック）
         if(taskText === "" || managerText === ""){
             alert("内容と担当者をどちらも入力してください！");
             return;
         }
 
-        // 新しいタスクカードの作成
-       const newTaskCard = document.createElement('div');
-        newTaskCard.classList.add('task-card','status-todo');
-        newTaskCard.setAttribute('draggable', 'true'); // ドラッグ可能にする
+        await addDoc(tasksCollection, {
+            title: taskText,
+            manager: managerText,
+            date: dateText,
+            priority: priorityText,
+            status: "todo",
+            createdAt: new Date()
+        });
 
-        // 中身のHTMLはそのまま
-        newTaskCard.innerHTML = `...`; 
-
-        // ★ ここでドラッグイベントを登録する関数を呼ぶ
-        addDragEvents(newTaskCard);
-
-        todoList.appendChild(newTaskCard);
-
-        // カードの中身を構築（期日も表示するように追加）
-        newTaskCard.innerHTML = `
-            <strong>${taskText}</strong>
-            <p style="margin: 5px 0 0 0; font-size: 0.8em; color: #666;">
-                担当：${managerText}
-            </p>
-            ${dateText ? `<p style="margin: 2px 0 0 0; font-size: 0.8em; color: #cc0000;">期日：${dateText}</p>` : ''}
-        `;
-
-        // 未着手リストに追加
-        todoList.appendChild(newTaskCard);
-
-        // 入力欄をリセットして画面を戻す
         taskInput.value = "";
         taskManager.value = "";
         taskDate.value = "";
@@ -72,58 +70,90 @@ document.addEventListener('DOMContentLoaded', function(){
         boardScene.style.display = 'block';
     });
 
-    // --- ドラッグ＆ドロップ機能の追加 ---
+    // カードを描画する補助関数（★ここでボタンを復活）
+    function renderTaskCard(data, id) {
+        const newTaskCard = document.createElement('div');
+        newTaskCard.classList.add('task-card', `status-${data.status}`);
+        newTaskCard.setAttribute('draggable', 'true');
+        newTaskCard.dataset.id = id;
 
-// 1. ドラッグ中の要素を保持する変数
-let draggedItem = null;
+        // 優先度バッジの作成（もしデータにあれば）
+        const priorityBadge = data.priority ? `<span class="priority-badge ${data.priority}">${data.priority === 'high' ? '高' : data.priority === 'low' ? '低' : '中'}</span>` : '';
 
-// 2. タスクリスト（列）に対してドロップを受け入れる設定
-const lists = document.querySelectorAll('.task-list');
+        // 元のHTML書式に合わせて編集ボタンを復活
+        newTaskCard.innerHTML = `
+            <div class="task-body">
+                ${priorityBadge}
+                <strong>${data.title}</strong>
+                <p style="margin: 5px 0 0 0; font-size: 0.8em; color: #666;">担当：${data.manager}</p>
+                ${data.date ? `<p style="margin: 2px 0 0 0; font-size: 0.8em; color: #cc0000;">期日：${data.date}</p>` : ''}
+            </div>
+            <div class="task-actions">
+                <button class="edit-btn">編集</button>
+                <button class="delete-btn">削除</button>
+            </div>
+        `;
 
-lists.forEach(list => {
-    // 列の上に重なったとき（これがないとドロップできない）
-    list.addEventListener('dragover', (e) => {
-        e.preventDefault();
+        // 削除ボタンの処理
+        newTaskCard.querySelector('.delete-btn').addEventListener('click', async () => {
+            if(confirm("このタスクを削除しますか？")) {
+                await deleteDoc(doc(db, "tasks", id));
+            }
+        });
+
+        // 編集ボタンの処理（※現時点ではアラートのみ。必要に応じて編集機能を実装）
+        newTaskCard.querySelector('.edit-btn').addEventListener('click', () => {
+            alert("編集機能は今後のアップデートで実装予定です！");
+        });
+
+        addDragEvents(newTaskCard);
+
+        const targetList = document.getElementById(`${data.status}-list`);
+        if(targetList) targetList.appendChild(newTaskCard);
+    }
+
+    // --- ドラッグ＆ドロップ ---
+    let draggedItem = null;
+    const lists = document.querySelectorAll('.task-list');
+
+    lists.forEach(list => {
+        list.addEventListener('dragover', (e) => e.preventDefault());
+        list.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            list.classList.add('drag-over');
+        });
+        list.addEventListener('dragleave', () => {
+            list.classList.remove('drag-over');
+        });
+        list.addEventListener('drop', async () => {
+            list.classList.remove('drag-over');
+            if(draggedItem) {
+                const taskId = draggedItem.dataset.id;
+                const newStatus = list.id.replace('-list', '');
+
+                if (taskId) {
+                    try {
+                        await updateDoc(doc(db, "tasks", taskId), {
+                            status: newStatus
+                        });
+                    } catch (error) {
+                        console.error("ステータス更新エラー:", error);
+                    }
+                }
+            }
+        });
     });
 
-    // 列に入ったとき
-    list.addEventListener('dragenter', (e) => {
-        e.preventDefault();
-        list.style.backgroundColor = "rgba(0, 0, 0, 0.1)"; // 少し色を変える
-    });
-
-    // 列から離れたとき
-    list.addEventListener('dragleave', () => {
-        list.style.backgroundColor = "";
-    });
-
-    // ドロップしたとき
-    list.addEventListener('drop', () => {
-        list.style.backgroundColor = "";
-        list.appendChild(draggedItem); // ドラッグ中の要素をこの列に移動
-    });
-});
-
-// 3. 新しく作るカードにドラッグイベントを設定する関数
-function addDragEvents(item) {
-    item.addEventListener('dragstart', () => {
-        draggedItem = item; // ドラッグ開始した要素を記録
-        setTimeout(() => {
-            item.style.display = "none"; // ドラッグ中、元の場所で非表示にする
-        }, 0);
-    });
-
-    item.addEventListener('dragend', () => {
-        setTimeout(() => {
-            item.style.display = "block"; // ドラッグ終了後に表示
-            draggedItem = null;
-        }, 0);
-    });
-}
-
-// 既存のタスクカード（最初からHTMLにある分）にもイベントをつける
-document.querySelectorAll('.task-card').forEach(card => {
-    card.setAttribute('draggable', 'true');
-    addDragEvents(card);
-});
+    function addDragEvents(item) {
+        item.addEventListener('dragstart', () => {
+            draggedItem = item;
+            setTimeout(() => { item.style.display = "none"; }, 0);
+        });
+        item.addEventListener('dragend', () => {
+            setTimeout(() => {
+                item.style.display = "block";
+                draggedItem = null;
+            }, 0);
+        });
+    }
 });

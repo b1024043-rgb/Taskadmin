@@ -44,9 +44,6 @@ document.addEventListener('DOMContentLoaded', function(){
         newTaskCard.classList.add('task-card','status-todo');
         newTaskCard.setAttribute('draggable', 'true'); // ドラッグ可能にする
 
-        // 中身のHTMLはそのまま
-        newTaskCard.innerHTML = `...`; 
-
         // ★ ここでドラッグイベントを登録する関数を呼ぶ
         addDragEvents(newTaskCard);
 
@@ -60,9 +57,6 @@ document.addEventListener('DOMContentLoaded', function(){
             </p>
             ${dateText ? `<p style="margin: 2px 0 0 0; font-size: 0.8em; color: #cc0000;">期日：${dateText}</p>` : ''}
         `;
-
-        // 未着手リストに追加
-        todoList.appendChild(newTaskCard);
 
         // 入力欄をリセットして画面を戻す
         taskInput.value = "";

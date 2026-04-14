@@ -1,25 +1,85 @@
-<!DOCTYPE html>
-<html lang = "ja">
-<head>
-    <meta charset = "UTF-8">
-    <meta name = "viewport" content = "width= device-width, initial-scale=1.0">
-    <title> Hello World サンプル</title>
-    <link rel="stylesheet" href="styles.css">    
-</head>
-<body>
-    <div class="container">
-        <h1>Hello World サンプル</h1>
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width= device-width, initial-scale=1.0" />
+    <title>タスク管理アプリ</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-    <div id="message">
-        これはHTML, CSS, JabaScriptを組み合わせた簡単なサンプルです
+  <body>
+    <div id="board-scene">
+      <!-- 一番大きい見出し -->
+      <header class="head">
+        <h1>タスク管理アプリ</h1>
+      </header>
+      <!-- カンバンのシーン -->
+      <div class="kanban-board">
+        <!-- タスクの分類 -->
+        <!-- 左 -->
+        <section class="column todo">
+          <h2>未着手</h2>
+          <div class="task-list">
+            <div class="task-card status-todo">タスク１</div>
+          </div>
+        </section>
+        <!-- 真ん中 -->
+        <section class="column doing">
+          <h2>着手中</h2>
+          <div class="task-list">
+            <div class="task-card status-doing">タスク１</div>
+          </div>
+        </section>
+        <!-- 右 -->
+        <section class="column done">
+          <h2>完了済み</h2>
+          <div class="task-list">
+            <div class="task-card status-done">タスク１</div>
+          </div>
+        </section>
+      </div>
+      <!-- 追加ボタン -->
+      <button id="show-form-btn" class="add-button">+</button>
     </div>
-    <button id="greetBtn">挨拶する</button>
-    <button id="changeColorBtn">色を変える</button>
-
-    <div id="result">
-        <!--結果がここに表示されます-->
+    <!-- タスクを追加できるシーン -->
+    <div id="form-scene" style="display: none;">
+      <!-- データ送信のエリア -->
+      <form id="task-form">
+        <h2>タスクを追加</h2>
+        <!-- フォームを囲む -->
+        <fieldset>
+          <legend>タスク詳細</legend>
+          <!-- 内容を書き込む -->
+          <section class="form-group">
+            <label for="task-input">タスク名：</label>
+            <input
+              type="text"
+              id="task-input"
+              required
+              placeholder="何をしますか？"
+            />
+          </section>
+          <!-- 期日を書き込む -->
+          <section class="form-group">
+            <label for="task-date">期日　　：</label>
+            <input type="date" id="task-date" />
+          </section>
+          <!-- 担当者を書き込む -->
+          <section class="form-group">
+            <label for="task-manager">担当者　：</label>
+            <input
+              type="text"
+              id="task-manager"
+              required
+              placeholder="山田　太郎"
+            />
+          </section>
+        </fieldset>
+        <!-- 保存と戻るボタン -->
+        <button id="save-btn" class="save-btn">保存</button>
+        <button id="cancel-btn" class="cancel-btn">戻る</button>
+      </form>
     </div>
-</div>
-<script src="script.js"></script>
-</body>
+    <script src="script.js" defer></script>
+  </body>
 </html>

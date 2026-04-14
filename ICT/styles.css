@@ -8,54 +8,108 @@ body {
 }
 
 /*コンテナのスタイル*/
-.container{
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+.kanban-board{
+    display: flex;
+    gap:20px;
+    align-items: flex-start;
+    justify-content: center;
 }
+/* タスク全体ののスタイル */
+.column{
+    width: 300px;
+    background: #ccc;
+    border-radius: 8px;
+    padding-bottom: 20px;
+}
+/* 未着手タスクのスタイル */
+.todo{
+    background-color:lightblue;
+}
+/* 着手中タスクのスタイル */
+.doing{
+    background-color:darkorange;
+}
+/* 完了済みタスクのスタイル */
+.done{
+    background-color:lightgreen;
+}
+/* それぞれの列のタスクのスタイル */
+.task-list{
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 10px;
+}
+/* タスク一つ一つのスタイル*/
+.task-card{
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: left;
+}
+/* タスク管理アプリ見出しのスタイル */
+.head{
+    color: red;
+    
+}
+fieldset{
+    border-radius: 10px;
+}
+
+.form-group{
+    margin: 10px;
+    text-align: left;
+}
+
 
 /*見出しのスタイル*/
-h1 {
-    color: #333;
-    margin-bottom: 20px;
-}
-/*メッセージのスタイル*/
-#message {
-    font-size: 18px;
-    color: #666;
-    margin-bottom: 30px;
-}
 
-button{
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor:  pointer;
-    margin: 0 5px;
-    transition: background-color 0.3s;
-}
 
-button:hover{
-    background-color: #45a049;
-}
-
-/*結果表示エリアのスタイル */
-#result {
+h2{
+    color: black;
     margin-top: 20px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    min-height: 20px;
 }
 
-/*強調表示*/
-.highlight {
-    color: #ff6600;
-    font-weight: bold;
+/* ボタン全体のスタイル */
+button{
+    /* --- 既存のコード --- */
+    border: 1px solid #333; 
+    background-color: #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 20px;
+    font-size: 30px;
+    color: #333;
+    transition: all 0.1s;
 }
+/* ボタンにカーソルを合わせたときのスタイル */
+button:hover{
+    background-color: #d0d0d0;
+    cursor: pointer;
+}
+/* ボタンをクリックしたときのスタイル */
+button:active{
+     background-color: #b0b0b0;
+     transform: scale(0.95);
+}
+
+.save-btn, .cancel-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+    border-radius: 0%;
+    writing-mode: vertical-lr;
+    display: flex;        /* 中身を中央に寄せる準備 */
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+/* button:focus{
+    outline: 2px solid #007bff;
+} */
+
+

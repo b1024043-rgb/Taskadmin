@@ -97,17 +97,32 @@
                   type="text"
                   id="task-manager"
                   required
-                  placeholder="山田　太郎"
+                  placeholder="山田、田中(カンマ区切り)"
                 />
               </section>
               <!-- 優先度を書き込む -->
               <section class="form-group">
-                <label for="task-priority">優先度　：</label>
-                <select id="task-priority">
-                  <option value="high">高</option>
-                  <option value="middle" selected>中</option>
-                  <option value="low">低</option>
-                </select>
+                <label>優先度　：</label>
+                <div class="priority-options">
+                  <label
+                    ><input
+                      type="radio"
+                      name="priority"
+                      value="high"
+                    />高</label
+                  >
+                  <label
+                    ><input
+                      type="radio"
+                      name="priority"
+                      value="middle"
+                      checked
+                    />中</label
+                  >
+                  <label
+                    ><input type="radio" name="priority" value="low" />低</label
+                  >
+                </div>
               </section>
             </fieldset>
             <!-- 保存と戻るボタン -->

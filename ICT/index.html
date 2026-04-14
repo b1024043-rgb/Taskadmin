@@ -8,77 +8,116 @@
   </head>
 
   <body>
-    <div id="board-scene">
-      <!-- 一番大きい見出し -->
-      <header class="head">
-        <h1>タスク管理アプリ</h1>
-      </header>
-      <!-- カンバンのシーン -->
-      <div class="kanban-board">
-        <!-- タスクの分類 -->
-        <!-- 左 -->
-        <section class="column todo">
-          <h2>未着手</h2>
-          <div class="task-list">
-            <div class="task-card status-todo">タスク１</div>
+    <div class="app-container">
+      <button id="prev-btn" class="nav-arrow">＜</button>
+      <div class="scene-wrapper">
+        <div id="board-scene" class="scene">
+          <!-- 一番大きい見出し -->
+          <header class="head">
+            <h1>タスク管理アプリ</h1>
+          </header>
+          <!-- カンバンのシーン -->
+          <div class="kanban-board">
+            <!-- タスクの分類 -->
+            <!-- 左 -->
+            <section class="column todo">
+              <h2>未着手</h2>
+              <!-- この列のタスクカード全体 -->
+              <div id="todo-list" class="task-list">
+                <!-- タスクカード一つひとつ -->
+                <div class="task-card">
+                  <!-- タスクカードの内容・期日・担当 -->
+                  <div class="task-body"></div>
+                  <!-- 編集ボタン・削除ボタン -->
+                  <div class="task-actions">
+                    <button class="edit-btn">編集</button>
+                    <button class="delete-btn">削除</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- 真ん中 -->
+            <section class="column doing">
+              <h2>着手中</h2>
+              <div id="doing-list" class="task-list">
+                <div class="task-card">
+                  <div class="task-body"></div>
+                  <div class="task-actions">
+                    <button class="edit-btn">編集</button>
+                    <button class="delete-btn">削除</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- 右 -->
+            <section class="column done">
+              <h2>完了済み</h2>
+              <div id="done-list" class="task-list">
+                <div class="task-card">
+                  <div class="task-body"></div>
+                  <div class="task-actions">
+                    <button class="edit-btn">編集</button>
+                    <button class="delete-btn">削除</button>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
-        </section>
-        <!-- 真ん中 -->
-        <section class="column doing">
-          <h2>着手中</h2>
-          <div class="task-list">
-            <div class="task-card status-doing">タスク１</div>
-          </div>
-        </section>
-        <!-- 右 -->
-        <section class="column done">
-          <h2>完了済み</h2>
-          <div class="task-list">
-            <div class="task-card status-done">タスク１</div>
-          </div>
-        </section>
+          <!-- 追加ボタン -->
+          <button id="show-form-btn" class="add-button">+</button>
+        </div>
+
+        <!-- タスクを追加できるシーン -->
+        <div id="form-scene" class="scene" style="display: none">
+          <!-- データ送信のエリア -->
+          <form id="task-form">
+            <h2>タスクを追加</h2>
+            <!-- フォームを囲む -->
+            <fieldset>
+              <legend>タスク詳細</legend>
+              <!-- 内容を書き込む -->
+              <section class="form-group">
+                <label for="task-input">タスク名：</label>
+                <input
+                  type="text"
+                  id="task-input"
+                  required
+                  placeholder="何をしますか？"
+                />
+              </section>
+              <!-- 期日を書き込む -->
+              <section class="form-group">
+                <label for="task-date">期日　　：</label>
+                <input type="date" id="task-date" />
+              </section>
+              <!-- 担当者を書き込む -->
+              <section class="form-group">
+                <label for="task-manager">担当者　：</label>
+                <input
+                  type="text"
+                  id="task-manager"
+                  required
+                  placeholder="山田　太郎"
+                />
+              </section>
+              <!-- 優先度を書き込む -->
+              <section class="form-group">
+                <label for="task-priority">優先度　：</label>
+                <select id="task-priority">
+                  <option value="high">高</option>
+                  <option value="middle" selected>中</option>
+                  <option value="low">低</option>
+                </select>
+              </section>
+            </fieldset>
+            <!-- 保存と戻るボタン -->
+            <button id="save-btn" class="save-btn">保存</button>
+            <button id="cancel-btn" class="cancel-btn">戻る</button>
+          </form>
+        </div>
+        <div id="other-scene" class="scene" style="display: none"></div>
       </div>
-      <!-- 追加ボタン -->
-      <button id="show-form-btn" class="add-button">+</button>
-    </div>
-    <!-- タスクを追加できるシーン -->
-    <div id="form-scene" style="display: none;">
-      <!-- データ送信のエリア -->
-      <form id="task-form">
-        <h2>タスクを追加</h2>
-        <!-- フォームを囲む -->
-        <fieldset>
-          <legend>タスク詳細</legend>
-          <!-- 内容を書き込む -->
-          <section class="form-group">
-            <label for="task-input">タスク名：</label>
-            <input
-              type="text"
-              id="task-input"
-              required
-              placeholder="何をしますか？"
-            />
-          </section>
-          <!-- 期日を書き込む -->
-          <section class="form-group">
-            <label for="task-date">期日　　：</label>
-            <input type="date" id="task-date" />
-          </section>
-          <!-- 担当者を書き込む -->
-          <section class="form-group">
-            <label for="task-manager">担当者　：</label>
-            <input
-              type="text"
-              id="task-manager"
-              required
-              placeholder="山田　太郎"
-            />
-          </section>
-        </fieldset>
-        <!-- 保存と戻るボタン -->
-        <button id="save-btn" class="save-btn">保存</button>
-        <button id="cancel-btn" class="cancel-btn">戻る</button>
-      </form>
+      <button id="next-btn" class="nav-arrow">＞</button>
     </div>
     <script src="script.js"></script>
   </body>

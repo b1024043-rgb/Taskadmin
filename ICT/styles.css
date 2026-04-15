@@ -202,3 +202,24 @@ button:active{
         margin-bottom: 20px;
     }
 }
+.priority-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+}
+
+.priority-badge.high {
+    background-color: #ff4d4d; /* 赤 */
+}
+
+.priority-badge.middle {
+    background-color: #ffad33; /* オレンジ */
+}
+
+.priority-badge.low {
+    background-color: #4CAF50; /* 緑 */
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン - タスク管理アプリ</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="scene">
+            <h2 id="auth-title">ログイン</h2>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="email">メールアドレス</label>
+                    <input type="email" id="email" autocomplete="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" autocomplete="current-password" required>
+                </div>
+                
+                <button type="submit" id="auth-submit-btn" class="save-btn">ログイン</button>
+                <p><a href="#" id="toggle-link">新規アカウント作成はこちら</a></p>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="auth-script.js"></script>
+</body>
+</html>

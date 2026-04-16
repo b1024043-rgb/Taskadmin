@@ -15,6 +15,7 @@
           <!-- 一番大きい見出し -->
           <header class="head">
             <h1>タスク管理アプリ</h1>
+            <button id="logout-btn" class="cancel-btn" style="position: absolute; top: 20px; right: 20px; width: auto; padding: 5px 15px;">ログアウト</button>
           </header>
           <!-- カンバンのシーン -->
           <div class="kanban-board">
@@ -24,42 +25,18 @@
               <h2>未着手</h2>
               <!-- この列のタスクカード全体 -->
               <div id="todo-list" class="task-list">
-                <!-- タスクカード一つひとつ -->
-                <div class="task-card">
-                  <!-- タスクカードの内容・期日・担当 -->
-                  <div class="task-body"></div>
-                  <!-- 編集ボタン・削除ボタン -->
-                  <div class="task-actions">
-                    <button class="edit-btn">編集</button>
-                    <button class="delete-btn">削除</button>
-                  </div>
-                </div>
               </div>
             </section>
             <!-- 真ん中 -->
             <section class="column doing">
               <h2>着手中</h2>
               <div id="doing-list" class="task-list">
-                <div class="task-card">
-                  <div class="task-body"></div>
-                  <div class="task-actions">
-                    <button class="edit-btn">編集</button>
-                    <button class="delete-btn">削除</button>
-                  </div>
-                </div>
               </div>
             </section>
             <!-- 右 -->
             <section class="column done">
               <h2>完了済み</h2>
               <div id="done-list" class="task-list">
-                <div class="task-card">
-                  <div class="task-body"></div>
-                  <div class="task-actions">
-                    <button class="edit-btn">編集</button>
-                    <button class="delete-btn">削除</button>
-                  </div>
-                </div>
               </div>
             </section>
           </div>
@@ -136,6 +113,6 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="script.js"></script>
-    <script src="script.js"></script>
+    
   </body>
 </html>

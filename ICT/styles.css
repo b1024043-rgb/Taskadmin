@@ -223,3 +223,7 @@ button:active{
 .priority-badge.low {
     background-color: #4CAF50; /* 緑 */
 }
+/* styles.css の最後の方に追加 */
+#board-scene {
+    display: none; /* デフォルトは非表示 */
+}

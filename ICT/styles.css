@@ -227,3 +227,66 @@ button:active{
 #board-scene {
     display: none; /* デフォルトは非表示 */
 }
+/* --- マルチセレクトUI --- */
+.multi-select-container {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    background: white;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.chip {
+    background-color: #e0e0e0;
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    gap: 5px;
+    color: #333;
+}
+
+.chip .remove-btn {
+    cursor: pointer;
+    font-weight: bold;
+    color: #666;
+}
+
+#user-search-input {
+    border: none !important;
+    outline: none !important;
+    flex: 1;
+    min-width: 120px;
+    padding: 5px;
+    box-shadow: none !important;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
+}

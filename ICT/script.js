@@ -1,36 +1,43 @@
 import { SUPABASE_CONFIG } from './config.js';
 
-document.addEventListener('DOMContentLoaded', function(){
-    // config.js から読み込んだ値を使用
+document.addEventListener('DOMContentLoaded', function () {
     const supabaseClient = supabase.createClient(SUPABASE_CONFIG.URL, SUPABASE_CONFIG.KEY);
+    console.log("URL:", SUPABASE_CONFIG.URL);
+    console.log("Key:", SUPABASE_CONFIG.KEY ? "取得成功" : "取得失敗（空です）");
 
-    // ★ 挙動を安定させるためのフラグ管理
-    let isSelfUpdating = false; 
-    // ★ ユーザー情報を保持する変数（認証待ちによるチラつきを防止）
+    //  挙動を安定させるためのフラグ管理
+    let isSelfUpdating = false;
+    //  ユーザー情報を保持する変数
     let currentUser = null;
+    //  マルチセレクト用の状態管理
+    let allProfiles = [];
+    let selectedAssignees = [];
 
-    // --- 追加：ログインチェックロジック ---
+    // --- ログインチェック ---
     async function checkUser() {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        
         if (!session) {
             window.location.href = 'auth.html';
             return;
         }
-
-        // ★ ログイン成功時にユーザー情報を変数に入れておく
         currentUser = session.user;
-        
-        const boardScene = document.getElementById('board-scene');
-        if (boardScene) {
-            boardScene.style.display = 'flex'; 
-        }
-
+        await fetchProfiles(); // プロフィール一覧を先に取得
+        document.getElementById('board-scene').style.display = 'flex';
         loadTasks();
     }
     checkUser();
 
-    // --- 追加：ログアウト処理 ---
+    // --- プロフィール一覧の取得（担当者名の解決に使用）---
+    async function fetchProfiles() {
+        const { data, error } = await supabaseClient
+            .from('profiles')
+            .select('id, username');
+        if (!error && data) {
+            allProfiles = data;
+        }
+    }
+
+    // --- ログアウト ---
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
@@ -43,21 +50,161 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     }
 
-    // 要素の取得
-    const boardScene = document.getElementById('board-scene');
-    const formScene = document.getElementById('form-scene');
-    const showFormBtn = document.getElementById('show-form-btn');
-    const saveBtn = document.getElementById('save-btn');
-    const cancelBtn = document.getElementById('cancel-btn');
-    
-    const taskInput = document.getElementById('task-input');
-    const taskDate = document.getElementById('task-date');
-    const taskManager = document.getElementById('task-manager');
+    // --- シーン切り替え ---
+    function switchToScene(sceneId) {
+        document.querySelectorAll('.scene').forEach(s => s.style.display = 'none');
+        const target = document.getElementById(sceneId);
+        if (target) {
+            target.style.display = sceneId === 'board-scene' ? 'flex' : 'block';
+        }
+    }
 
-    // --- 1. データを読み込んで画面に表示する関数 ---
+    // ボード → フォームへ（+ ボタン）
+    const showFormBtn = document.getElementById('show-form-btn');
+    if (showFormBtn) {
+        showFormBtn.addEventListener('click', () => {
+            selectedAssignees = [];
+            renderChips();
+            switchToScene('form-scene');
+        });
+    }
+
+    // フォーム → ボードへ（戻るボタン）
+    const cancelBtn = document.getElementById('cancel-btn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchToScene('board-scene');
+        });
+    }
+
+    // ==========================================================
+    // マルチセレクトUI（担当者検索・チップ表示）
+    // ==========================================================
+    const searchInput = document.getElementById('user-search-input');
+    const dropdown = document.getElementById('user-dropdown');
+    const chipsContainer = document.getElementById('selected-chips');
+
+    if (searchInput) {
+        // 入力に合わせて候補を絞り込む
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            if (!term) {
+                dropdown.style.display = 'none';
+                return;
+            }
+            const filtered = allProfiles.filter(p =>
+                p.username.toLowerCase().includes(term) &&
+                !selectedAssignees.includes(p.id) // 選択済みは除外
+            );
+            renderDropdown(filtered);
+        });
+
+        // 外側クリックでドロップダウンを閉じる
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+
+    function renderDropdown(users) {
+        dropdown.innerHTML = '';
+        if (users.length === 0) {
+            dropdown.style.display = 'none';
+            return;
+        }
+        users.forEach(user => {
+            const item = document.createElement('div');
+            item.className = 'dropdown-item';
+            item.textContent = user.username;
+            // mousedown で blur より先に発火させてドロップダウンが消えるのを防ぐ
+            item.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                selectedAssignees.push(user.id);
+                renderChips();
+                searchInput.value = '';
+                dropdown.style.display = 'none';
+            });
+            dropdown.appendChild(item);
+        });
+        dropdown.style.display = 'block';
+    }
+
+    function renderChips() {
+        chipsContainer.innerHTML = '';
+        selectedAssignees.forEach(id => {
+            const user = allProfiles.find(p => p.id === id);
+            if (!user) return;
+            const chip = document.createElement('span');
+            chip.className = 'chip';
+            chip.innerHTML = `${user.username} <span class="remove-btn">×</span>`;
+            chip.querySelector('.remove-btn').addEventListener('click', () => {
+                selectedAssignees = selectedAssignees.filter(sid => sid !== id);
+                renderChips();
+            });
+            chipsContainer.appendChild(chip);
+        });
+    }
+
+    // ==========================================================
+    // タスク保存
+    // ※ index.html の ID に合わせて task-input / task-date を使用
+    // ==========================================================
+    const taskForm = document.getElementById('task-form');
+    if (taskForm) {
+        taskForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('task-input').value;
+            const due_date = document.getElementById('task-date').value;
+            const priorityEl = document.querySelector('input[name="priority"]:checked');
+            const priority = priorityEl ? priorityEl.value : 'middle';
+
+            if (!title) {
+                alert('タスク名は必須です');
+                return;
+            }
+            if (!currentUser) return;
+
+            isSelfUpdating = true;
+
+            const { error } = await supabaseClient
+                .from('tasks')
+                .insert([{
+                    title,
+                    due_date,
+                    priority,
+                    status: 'todo',
+                    user_id: currentUser.id,
+                    assignees: selectedAssignees  // UUID配列で保存
+                }]);
+
+            if (error) {
+                console.error('保存エラー:', error);
+                alert('保存に失敗しました');
+                isSelfUpdating = false;
+            } else {
+                taskForm.reset();
+                selectedAssignees = [];
+                renderChips();
+                switchToScene('board-scene');
+
+                setTimeout(() => {
+                    isSelfUpdating = false;
+                    loadTasks();
+                }, 800);
+            }
+        });
+    }
+
+    // ==========================================================
+    // タスク読み込み
+    // ==========================================================
     async function loadTasks() {
-        // 自分が更新した直後（isSelfUpdatingがtrue）は、リアルタイム通知による再描画をスキップする
+        // 自分が操作した直後のリアルタイム通知による再描画をスキップ
         if (isSelfUpdating) return;
+        if (!currentUser) return;
 
         const { data: tasks, error } = await supabaseClient
             .from('tasks')
@@ -69,47 +216,54 @@ document.addEventListener('DOMContentLoaded', function(){
             return;
         }
 
-        // ★ 高速化のため、ここで await getUser() をせず currentUser を使う
-        if (!currentUser) return;
-
-        document.getElementById('todo-list').innerHTML = "";
-        document.getElementById('doing-list').innerHTML = "";
-        document.getElementById('done-list').innerHTML = "";
-
-        tasks.forEach(task => {
-            renderTaskCard(task, currentUser);
+        ['todo', 'doing', 'done'].forEach(status => {
+            const el = document.getElementById(`${status}-list`);
+            if (el) el.innerHTML = '';
         });
+
+        tasks.forEach(task => renderTaskCard(task));
     }
 
-    // --- 2. タスクカードを作成して画面に追加する関数 ---
-    function renderTaskCard(task, user) {
-        const listId = `${task.status}-list`;
-        const listEl = document.getElementById(listId);
+    // ==========================================================
+    // タスクカード描画
+    // ==========================================================
+    function renderTaskCard(task) {
+        const listEl = document.getElementById(`${task.status}-list`);
         if (!listEl) return;
 
         const card = document.createElement('div');
         card.className = 'task-card';
-        
-        const isOwner = task.user_id === user.id;
-        card.draggable = isOwner;
         card.dataset.id = task.id;
 
-        let priorityLabel = "中";
-        if(task.priority === "high") priorityLabel = "高";
-        if(task.priority === "low") priorityLabel = "低";
-        
+        // 権限判定
+        const isOwner = task.user_id === currentUser.id;
+        const isAssignee = Array.isArray(task.assignees) && task.assignees.includes(currentUser.id);
+        const canDrag = isOwner || isAssignee; // ドラッグ（ステータス変更）は担当者もOK
+        // 削除は作成者のみ（仕様書 5.2 より）
+
+        card.draggable = canDrag;
+
+        const priorityLabel = task.priority === 'high' ? '高' : task.priority === 'low' ? '低' : '中';
+
+        // 担当者IDを名前に変換
+        const assigneeNames = Array.isArray(task.assignees) && task.assignees.length > 0
+            ? task.assignees
+                .map(id => allProfiles.find(p => p.id === id)?.username || '不明')
+                .join(', ')
+            : '未設定';
+
         card.innerHTML = `
             <div class="task-body">
                 <div class="priority-badge ${task.priority}">${priorityLabel}</div>
                 <strong>${task.title}</strong><br>
                 <small>期限: ${task.due_date || '未設定'}</small><br>
-                <small>担当: ${task.manager}</small>
+                <small>担当: ${assigneeNames}</small>
             </div>
             <div class="task-actions">
-                ${isOwner ? `
-                    <button class="edit-btn" data-id="${task.id}">編集</button>
-                    <button class="delete-btn" data-id="${task.id}">削除</button>
-                ` : '<small style="color:#999; font-size:10px;">閲覧のみ</small>'}
+                ${isOwner
+                ? `<button class="delete-btn" data-id="${task.id}">削除</button>`
+                : '<small style="color:#999; font-size:10px;">閲覧のみ</small>'
+            }
             </div>
         `;
 
@@ -117,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function(){
         if (deleteBtn) {
             deleteBtn.addEventListener('click', async () => {
                 if (confirm('このタスクを削除しますか？')) {
-                    isSelfUpdating = true; // 通知を無視
+                    isSelfUpdating = true;
                     const { error } = await supabaseClient
                         .from('tasks')
                         .delete()
@@ -127,9 +281,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         alert('削除に失敗しました');
                         isSelfUpdating = false;
                     } else {
-                        // 削除時は再描画せず、その場でカードを消すとよりスムーズ
                         card.remove();
-                        // 通知が落ち着く頃に解除
                         setTimeout(() => { isSelfUpdating = false; }, 1000);
                     }
                 }
@@ -140,113 +292,52 @@ document.addEventListener('DOMContentLoaded', function(){
         listEl.appendChild(card);
     }
 
-    // --- 3. リアルタイム同期の設定 ---
+    // ==========================================================
+    // リアルタイム同期
+    // ==========================================================
     supabaseClient
         .channel('public:tasks')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
-            // 他の人が変更した時だけ反映されるように、loadTasks内のフラグで制御
-            loadTasks();
+            loadTasks(); // isSelfUpdating フラグで自分の操作は無視される
         })
         .subscribe();
 
-    showFormBtn.addEventListener('click', () => {
-        boardScene.style.display = 'none';
-        formScene.style.display = 'block';
-    });
-
-    cancelBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        formScene.style.display = 'none';
-        boardScene.style.display = 'flex';
-    });
-
-    saveBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const title = taskInput.value;
-        const manager = taskManager.value;
-        const due_date = taskDate.value;
-        const priorityEl = document.querySelector('input[name="priority"]:checked');
-        const priority = priorityEl ? priorityEl.value : 'middle';
-
-        if (!title || !manager) {
-            alert("内容と担当者は必須です");
-            return;
-        }
-
-        // ★ currentUser を使用
-        if (!currentUser) return;
-
-        isSelfUpdating = true; // 追加時の通知をブロック
-        const { error } = await supabaseClient
-            .from('tasks')
-            .insert([{ 
-                title, manager, due_date, priority, 
-                status: 'todo', user_id: currentUser.id 
-            }]);
-
-        if (error) {
-            console.error("保存エラー:", error);
-            isSelfUpdating = false;
-        } else {
-            taskInput.value = "";
-            taskManager.value = ""; 
-            taskDate.value = "";
-            formScene.style.display = 'none';
-            boardScene.style.display = 'flex';
-            
-            // 自分の追加後、通知が届き終わるまで待ってからフラグ解除
-            setTimeout(() => {
-                isSelfUpdating = false;
-                loadTasks();
-            }, 800);
-        }
-    });
-
-    // --- ドラッグ＆ドロップロジック ---
+    // ==========================================================
+    // ドラッグ＆ドロップ
+    // ==========================================================
     let draggedItem = null;
-    const lists = document.querySelectorAll('.task-list');
 
-    lists.forEach(list => {
+    document.querySelectorAll('.task-list').forEach(list => {
         list.addEventListener('dragover', (e) => {
             e.preventDefault();
-            list.style.backgroundColor = "rgba(0,0,0,0.1)";
+            list.style.backgroundColor = 'rgba(0,0,0,0.1)';
         });
-
         list.addEventListener('dragleave', () => {
-            list.style.backgroundColor = "";
+            list.style.backgroundColor = '';
         });
-
         list.addEventListener('drop', async (e) => {
             e.preventDefault();
-            list.style.backgroundColor = "";
-            
-            if(draggedItem) {
-                const taskId = draggedItem.dataset.id;
-                const newStatus = list.id.replace('-list', '');
-                
-                // 1. 自分が更新中であることを宣言
-                isSelfUpdating = true;
+            list.style.backgroundColor = '';
+            if (!draggedItem) return;
 
-                // 2. 見た目を先に変える
-                list.appendChild(draggedItem);
+            const taskId = draggedItem.dataset.id;
+            const newStatus = list.id.replace('-list', '');
 
-                // 3. DBを更新
-                const { error } = await supabaseClient
-                    .from('tasks')
-                    .update({ status: newStatus })
-                    .eq('id', taskId);
+            isSelfUpdating = true;
+            list.appendChild(draggedItem); // 先に見た目を変える
 
-                if (error) {
-                    console.error("更新エラー:", error);
-                    alert("更新に失敗しました。再読み込みします。");
-                    isSelfUpdating = false;
-                    await loadTasks();
-                } else {
-                    // 4. 通知の衝突を避けるため、少し長めにフラグを維持（1秒）
-                    setTimeout(() => {
-                        isSelfUpdating = false;
-                    }, 1000);
-                }
+            const { error } = await supabaseClient
+                .from('tasks')
+                .update({ status: newStatus })
+                .eq('id', taskId);
+
+            if (error) {
+                console.error('更新エラー:', error);
+                alert('更新に失敗しました。再読み込みします。');
+                isSelfUpdating = false;
+                await loadTasks();
+            } else {
+                setTimeout(() => { isSelfUpdating = false; }, 1000);
             }
         });
     });
@@ -254,10 +345,10 @@ document.addEventListener('DOMContentLoaded', function(){
     function addDragEvents(item) {
         item.addEventListener('dragstart', () => {
             draggedItem = item;
-            item.style.opacity = "0.5";
+            item.style.opacity = '0.5';
         });
         item.addEventListener('dragend', () => {
-            item.style.opacity = "1";
+            item.style.opacity = '1';
             draggedItem = null;
         });
     }

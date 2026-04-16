@@ -1,118 +1,102 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width= device-width, initial-scale=1.0" />
-    <title>タスク管理アプリ</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
 
-  <body>
-    <div class="app-container">
-      <button id="prev-btn" class="nav-arrow">＜</button>
-      <div class="scene-wrapper">
-        <div id="board-scene" class="scene">
-          <!-- 一番大きい見出し -->
-          <header class="head">
-            <h1>タスク管理アプリ</h1>
-            <button id="logout-btn" class="cancel-btn" style="position: absolute; top: 20px; right: 20px; width: auto; padding: 5px 15px;">ログアウト</button>
-          </header>
-          <!-- カンバンのシーン -->
-          <div class="kanban-board">
-            <!-- タスクの分類 -->
-            <!-- 左 -->
-            <section class="column todo">
-              <h2>未着手</h2>
-              <!-- この列のタスクカード全体 -->
-              <div id="todo-list" class="task-list">
-              </div>
-            </section>
-            <!-- 真ん中 -->
-            <section class="column doing">
-              <h2>着手中</h2>
-              <div id="doing-list" class="task-list">
-              </div>
-            </section>
-            <!-- 右 -->
-            <section class="column done">
-              <h2>完了済み</h2>
-              <div id="done-list" class="task-list">
-              </div>
-            </section>
-          </div>
-          <!-- 追加ボタン -->
-          <button id="show-form-btn" class="add-button">+</button>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width= device-width, initial-scale=1.0" />
+  <title>タスク管理アプリ</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
 
-        <!-- タスクを追加できるシーン -->
-        <div id="form-scene" class="scene" style="display: none">
-          <!-- データ送信のエリア -->
-          <form id="task-form">
-            <h2>タスクを追加</h2>
-            <!-- フォームを囲む -->
-            <fieldset>
-              <legend>タスク詳細</legend>
-              <!-- 内容を書き込む -->
-              <section class="form-group">
-                <label for="task-input">タスク名：</label>
-                <input
-                  type="text"
-                  id="task-input"
-                  required
-                  placeholder="何をしますか？"
-                />
-              </section>
-              <!-- 期日を書き込む -->
-              <section class="form-group">
-                <label for="task-date">期日　　：</label>
-                <input type="date" id="task-date" />
-              </section>
-              <!-- 担当者を書き込む -->
-              <section class="form-group">
-                <label for="task-manager">担当者　：</label>
-                <input
-                  type="text"
-                  id="task-manager"
-                  required
-                  placeholder="山田、田中(カンマ区切り)"
-                />
-              </section>
-              <!-- 優先度を書き込む -->
-              <section class="form-group">
-                <label>優先度　：</label>
-                <div class="priority-options">
-                  <label
-                    ><input
-                      type="radio"
-                      name="priority"
-                      value="high"
-                    />高</label
-                  >
-                  <label
-                    ><input
-                      type="radio"
-                      name="priority"
-                      value="middle"
-                      checked
-                    />中</label
-                  >
-                  <label
-                    ><input type="radio" name="priority" value="low" />低</label
-                  >
-                </div>
-              </section>
-            </fieldset>
-            <!-- 保存と戻るボタン -->
-            <button id="save-btn" class="save-btn">保存</button>
-            <button id="cancel-btn" class="cancel-btn">戻る</button>
-          </form>
+<body>
+  <div class="app-container">
+    <button id="prev-btn" class="nav-arrow">＜</button>
+    <div class="scene-wrapper">
+      <div id="board-scene" class="scene">
+        <!-- 一番大きい見出し -->
+        <header class="head">
+          <h1>タスク管理アプリ</h1>
+          <button id="logout-btn" class="cancel-btn"
+            style="position: absolute; top: 20px; right: 20px; width: auto; padding: 5px 15px;">ログアウト</button>
+        </header>
+        <!-- カンバンのシーン -->
+        <div class="kanban-board">
+          <!-- タスクの分類 -->
+          <!-- 左 -->
+          <section class="column todo">
+            <h2>未着手</h2>
+            <!-- この列のタスクカード全体 -->
+            <div id="todo-list" class="task-list">
+            </div>
+          </section>
+          <!-- 真ん中 -->
+          <section class="column doing">
+            <h2>着手中</h2>
+            <div id="doing-list" class="task-list">
+            </div>
+          </section>
+          <!-- 右 -->
+          <section class="column done">
+            <h2>完了済み</h2>
+            <div id="done-list" class="task-list">
+            </div>
+          </section>
         </div>
-        <div id="other-scene" class="scene" style="display: none"></div>
+        <!-- 追加ボタン -->
+        <button id="show-form-btn" class="add-button">+</button>
       </div>
-      <button id="next-btn" class="nav-arrow">＞</button>
+
+      <!-- タスクを追加できるシーン -->
+      <div id="form-scene" class="scene" style="display: none">
+        <!-- データ送信のエリア -->
+        <form id="task-form">
+          <h2>タスクを追加</h2>
+          <!-- フォームを囲む -->
+          <fieldset>
+            <legend>タスク詳細</legend>
+            <!-- 内容を書き込む -->
+            <section class="form-group">
+              <label for="task-input">タスク名：</label>
+              <input type="text" id="task-input" required placeholder="何をしますか？" />
+            </section>
+            <!-- 期日を書き込む -->
+            <section class="form-group">
+              <label for="task-date">期日　　：</label>
+              <input type="date" id="task-date" />
+            </section>
+            <!-- 担当者を書き込む -->
+            <section class="form-group">
+              <label>担当者　：</label>
+              <div id="multi-select-container" class="multi-select-container">
+                <div id="selected-chips" class="selected-chips">
+                </div>
+                <input type="text" id="user-search-input" placeholder="担当者を検索して追加..." autocomplete="off" />
+                <div id="user-dropdown" class="user-dropdown" style="display: none;">
+                </div>
+              </div>
+            </section>
+            <!-- 優先度を書き込む -->
+            <section class="form-group">
+              <label>優先度　：</label>
+              <div class="priority-options">
+                <label><input type="radio" name="priority" value="high" />高</label>
+                <label><input type="radio" name="priority" value="middle" checked />中</label>
+                <label><input type="radio" name="priority" value="low" />低</label>
+              </div>
+            </section>
+          </fieldset>
+          <!-- 保存と戻るボタン -->
+          <button id="save-btn" class="save-btn">保存</button>
+          <button id="cancel-btn" class="cancel-btn">戻る</button>
+        </form>
+      </div>
+      <div id="other-scene" class="scene" style="display: none"></div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="script.js"></script>
-    
-  </body>
+    <button id="next-btn" class="nav-arrow">＞</button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="script.js"></script>
+
+</body>
+
 </html>

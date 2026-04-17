@@ -7,6 +7,17 @@ body {
     padding : 20px;
 }
 
+.head {
+    display: flex;
+    align-items: center;    /* 上下の中心を揃える */
+    width: 100%; 
+    justify-content: flex-start; /* これが「左に寄せる」決定打です */
+    padding: 10px 20px;
+}
+.head h1 {
+    margin: 0; /* これを入れると、本当にピタッと上に付きます */
+}
+
 /*コンテナのスタイル*/
 .kanban-board{
     display: flex;
